@@ -701,7 +701,6 @@ TransactionBuilder.prototype.sign = function (vin, keyPair, redeemScript, hashTy
       signature = Buffer.allocUnsafe(64)
       new BN(r, 10).toArrayLike(Buffer, 'be', 32).copy(signature, 0)
       new BN(s, 10).toArrayLike(Buffer, 'be', 32).copy(signature, 32)
-      console.log(signature)
     }
 
     input.signatures[i] = bscript.signature.encode(signature, hashType)
