@@ -2,6 +2,30 @@
   "valid": {
     "build": [
       {
+        "description": "Transaction w/ P2PKH -> P2PKH with provided R and S for signature",
+        "txHex": "0100000001ffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff000000006b48304502205cc9fc77c4608805a2192122d2a07311eb34a0af8fe745b7fce5c3a770fba24d022100fbb5186c7465e5821547013be8f20910fc333910ce59622cf53d9e96e02b90e901210279be667ef9dcbbac55a06295ce870b07029bfcdb2dce28d959f2815b16f81798ffffffff0110270000000000001976a914aa4d7985c57e011a8b3dd8e0e5a73aaef41629c588ac00000000",
+        "version": 1,
+        "inputs": [
+          {
+            "txId": "ffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff",
+            "vout": 0,
+            "signs": [
+              {
+                "keyPair": "KwDiBf89QgGbjEhKnhXJuH7LrciVrZi3qYjgd9M7rFU73sVHnoWn",
+                "r": "41969660798674927448939715460279503802644247548218348835781714437303426589261",
+                "s": "113850492878969457700141011744510697268654952691598671354428021115173716332777"
+              }
+            ]
+          }
+        ],
+        "outputs": [
+          {
+            "script": "OP_DUP OP_HASH160 aa4d7985c57e011a8b3dd8e0e5a73aaef41629c5 OP_EQUALVERIFY OP_CHECKSIG",
+            "value": 10000
+          }
+        ]
+      },
+      {
         "description": "Transaction w/ P2PKH -> P2PKH",
         "txHex": "0100000001ffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff000000006b483045022100a3b254e1c10b5d039f36c05f323995d6e5a367d98dd78a13d5bbc3991b35720e022022fccea3897d594de0689601fbd486588d5bfa6915be2386db0397ee9a6e80b601210279be667ef9dcbbac55a06295ce870b07029bfcdb2dce28d959f2815b16f81798ffffffff0110270000000000001976a914aa4d7985c57e011a8b3dd8e0e5a73aaef41629c588ac00000000",
         "version": 1,

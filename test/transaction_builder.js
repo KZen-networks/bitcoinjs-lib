@@ -77,7 +77,11 @@ function construct (f, dontSign) {
         witnessScript = bscript.fromASM(sign.witnessScript)
       }
 
-      txb.sign(index, keyPair, redeemScript, sign.hashType, value, witnessScript)
+      if (sign.r && sign.s) {
+        txb.sign(index, keyPair, redeemScript, sign.hashType, value, witnessScript, sign.r, sign.s)
+      } else {
+        txb.sign(index, keyPair, redeemScript, sign.hashType, value, witnessScript)
+      }
 
       if (sign.stage) {
         const tx = txb.buildIncomplete()
