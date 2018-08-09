@@ -9,7 +9,7 @@ const typeforce = require('typeforce')
 const types = require('./types')
 const classify = require('./classify')
 const SCRIPT_TYPES = classify.types
-
+const BN = require('bn.js')
 const ECPair = require('./ecpair')
 const Transaction = require('./transaction')
 
@@ -629,7 +629,18 @@ function canSign (input) {
     )
 }
 
-TransactionBuilder.prototype.sign = function (vin, keyPair, redeemScript, hashType, witnessValue, witnessScript) {
+/**
+ *
+ * @param {*} vin
+ * @param {*} keyPair
+ * @param {*} redeemScript
+ * @param {*} hashType
+ * @param {*} witnessValue
+ * @param {*} witnessScript
+ * @param {*} r a Big Number serialized in base 10
+ * @param {*} s a Big Number serialized in base 10
+ */
+TransactionBuilder.prototype.sign = function (vin, keyPair, redeemScript, hashType, witnessValue, witnessScript, r, s) {
   // TODO: remove keyPair.network matching in 4.0.0
   if (keyPair.network && keyPair.network !== this.network) throw new TypeError('Inconsistent network')
   if (!this.__inputs[vin]) throw new Error('No input at index: ' + vin)
@@ -680,7 +691,19 @@ TransactionBuilder.prototype.sign = function (vin, keyPair, redeemScript, hashTy
       throw new Error('BIP143 rejects uncompressed public keys in P2WPKH or P2WSH')
     }
 
-    const signature = keyPair.sign(signatureHash)
+    let signature
+    if (!r && !s) { // backward compatibility
+      signature = keyPair.sign(signatureHash)
+    } else if (!r || !s) {
+      throw new Error('For signing both r and s are required')
+    } else {
+      // Inspired by the logic in https://github.com/bitcoinjs/tiny-secp256k1/blob/master/ecurve.js#L253
+      signature = Buffer.allocUnsafe(64)
+      new BN(r, 10).toArrayLike(Buffer, 'be', 32).copy(signature, 0)
+      new BN(s, 10).toArrayLike(Buffer, 'be', 32).copy(signature, 32)
+      console.log(signature)
+    }
+
     input.signatures[i] = bscript.signature.encode(signature, hashType)
     return true
   })
