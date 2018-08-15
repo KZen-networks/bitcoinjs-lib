@@ -254,7 +254,7 @@ export class TransactionBuilder {
     setVersion(version: number): void;
 
     /** @since 3.0.0 */
-    sign(vin: number, keyPair: ECPair, redeemScript?: Buffer, hashType?: number, witnessValue?: number, witnessScript?: Buffer, r?: string, s?: string): void;
+    sign(vin: number, keyPair: ECPair, redeemScript?: Buffer, hashType?: number, witnessValue?: number, witnessScript?: Buffer, signF?: Function): void;
 
     static fromTransaction(transaction: Transaction, network: Network): TransactionBuilder;
 }
@@ -384,6 +384,7 @@ export const opcodes: {
     OP_WITHIN: number;
     OP_XOR: number;
 };
+
 
 export namespace address {
     function fromBase58Check(address: string): { hash: Buffer, version: number };
