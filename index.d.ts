@@ -254,6 +254,8 @@ export class TransactionBuilder {
     setVersion(version: number): void;
 
     /** @since 3.0.0 */
+    getSignatureHash(vin: number, keyPair: ECPair, redeemScript?: Buffer, hashType?: number, witnessValue?: number, witnessScript?: Buffer) : Buffer;
+
     sign(vin: number, keyPair: ECPair, redeemScript?: Buffer, hashType?: number, witnessValue?: number, witnessScript?: Buffer, signF?: Function): void;
 
     static fromTransaction(transaction: Transaction, network: Network): TransactionBuilder;

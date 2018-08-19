@@ -78,7 +78,12 @@ function construct (f, dontSign) {
       }
 
       if (sign.r && sign.s) {
-        let signF = function () { return { r: sign.r, s: sign.s } }
+        let signatureHash = txb.getSignatureHash(index, keyPair, redeemScript, sign.hashType, value, witnessScript)
+
+        let signF = function (hash) {
+          assert.strictEqual(hash.toString('hex'), signatureHash.toString('hex'))
+          return { r: sign.r, s: sign.s }
+        }
         txb.sign(index, keyPair, redeemScript, sign.hashType, value, witnessScript, signF)
       } else {
         txb.sign(index, keyPair, redeemScript, sign.hashType, value, witnessScript)

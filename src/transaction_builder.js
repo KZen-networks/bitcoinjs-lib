@@ -629,14 +629,45 @@ function canSign (input) {
     )
 }
 
+TransactionBuilder.prototype.getSignatureHash = function (vin, keyPair, redeemScript, hashType, witnessValue, witnessScript) {
+  // TODO: remove keyPair.network matching in 4.0.0
+  if (keyPair.network && keyPair.network !== this.network) throw new TypeError('Inconsistent network')
+  if (!this.__inputs[vin]) throw new Error('No input at index: ' + vin)
+  hashType = hashType || Transaction.SIGHASH_ALL
+
+  const input = this.__inputs[vin]
+
+  // if redeemScript was previously provided, enforce consistency
+  if (input.redeemScript !== undefined &&
+      redeemScript &&
+      !input.redeemScript.equals(redeemScript)) {
+    throw new Error('Inconsistent redeemScript')
+  }
+
+  const ourPubKey = keyPair.publicKey || keyPair.getPublicKey()
+  if (!canSign(input)) {
+    if (witnessValue !== undefined) {
+      if (input.value !== undefined && input.value !== witnessValue) throw new Error('Input didn\'t match witnessValue')
+      typeforce(types.Satoshi, witnessValue)
+      input.value = witnessValue
+    }
+
+    if (!canSign(input)) {
+      const prepared = prepareInput(input, ourPubKey, redeemScript, witnessValue, witnessScript)
+
+      // updates inline
+      Object.assign(input, prepared)
+    }
+
+    if (!canSign(input)) throw Error(input.prevOutType + ' not supported')
+  }
+
+  return (input.hasWitness)
+    ? this.__tx.hashForWitnessV0(vin, input.signScript, input.value, hashType)
+    : this.__tx.hashForSignature(vin, input.signScript, hashType)
+}
+
 /**
- *
- * @param {*} vin
- * @param {*} keyPair
- * @param {*} redeemScript
- * @param {*} hashType
- * @param {*} witnessValue
- * @param {*} witnessScript
  * @param {*} signF a signing function taking as an input a Buffer (signing hash)
  */
 TransactionBuilder.prototype.sign = function (vin, keyPair, redeemScript, hashType, witnessValue, witnessScript, signF) {
