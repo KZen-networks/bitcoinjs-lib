@@ -670,7 +670,7 @@ TransactionBuilder.prototype.getSignatureHash = function (vin, keyPair, redeemSc
 /**
  * @param {*} signF a signing function taking as an input a Buffer (signing hash)
  */
-TransactionBuilder.prototype.sign = function (vin, keyPair, redeemScript, hashType, witnessValue, witnessScript, signF) {
+TransactionBuilder.prototype.sign = function (vin, keyPair, redeemScript, hashType, witnessValue, witnessScript, mpcSig) {
   // TODO: remove keyPair.network matching in 4.0.0
   if (keyPair.network && keyPair.network !== this.network) throw new TypeError('Inconsistent network')
   if (!this.__inputs[vin]) throw new Error('No input at index: ' + vin)
@@ -722,14 +722,13 @@ TransactionBuilder.prototype.sign = function (vin, keyPair, redeemScript, hashTy
     }
 
     let signature
-    if (!signF) { // backward compatibility
+    if (!mpcSig) { // backward compatibility
       signature = keyPair.sign(signatureHash)
     } else {
       // Inspired by the logic in https://github.com/bitcoinjs/tiny-secp256k1/blob/master/ecurve.js#L253
       signature = Buffer.allocUnsafe(64)
-      let { r, s } = signF(signatureHash)
-      new BN(r, 10).toArrayLike(Buffer, 'be', 32).copy(signature, 0)
-      new BN(s, 10).toArrayLike(Buffer, 'be', 32).copy(signature, 32)
+      new BN(mpcSig.r, 10).toArrayLike(Buffer, 'be', 32).copy(signature, 0)
+      new BN(mpcSig.s, 10).toArrayLike(Buffer, 'be', 32).copy(signature, 32)
     }
 
     input.signatures[i] = bscript.signature.encode(signature, hashType)
