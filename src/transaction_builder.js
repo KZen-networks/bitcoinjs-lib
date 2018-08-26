@@ -727,8 +727,8 @@ TransactionBuilder.prototype.sign = function (vin, keyPair, redeemScript, hashTy
     } else {
       // Inspired by the logic in https://github.com/bitcoinjs/tiny-secp256k1/blob/master/ecurve.js#L253
       signature = Buffer.allocUnsafe(64)
-      new BN(mpcSig.r, 10).toArrayLike(Buffer, 'be', 32).copy(signature, 0)
-      new BN(mpcSig.s, 10).toArrayLike(Buffer, 'be', 32).copy(signature, 32)
+      new BN(mpcSig.r, 16).toArrayLike(Buffer, 'be', 32).copy(signature, 0)
+      new BN(mpcSig.s, 16).toArrayLike(Buffer, 'be', 32).copy(signature, 32)
     }
 
     input.signatures[i] = bscript.signature.encode(signature, hashType)
